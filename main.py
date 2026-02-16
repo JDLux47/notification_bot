@@ -61,7 +61,7 @@ def add_shift_start(message):
                      parse_mode='Markdown', reply_markup=markup)
 
 
-# График
+# График - последовательно по времени
 @bot.message_handler(func=lambda m: m.from_user.id in settings.ADMIN_IDS and m.text == "График")
 def show_schedule(message):
     logger.info(f"Admin {message.from_user.id} requested schedule")
@@ -71,9 +71,18 @@ def show_schedule(message):
     if not shifts:
         text = "**График пуст**\n\nНажмите «Добавить смену»"
     else:
-        text = "**График дежурств:**\n\n"
-        for shift in shifts:
-            text += f"`{shift['start_time']}-{shift['end_time']}`: **@{shift['username']}**\n"
+        shifts_sorted = sorted(shifts, key=lambda x: x['start_time'])
+
+        text = "**📋 График дежурств (по порядку):**```\n"
+        text += f"{'Время':<12} {'Менеджер':<15}\n"
+        text += f"{'-' * 12} {'-' * 15}\n"
+
+        for shift in shifts_sorted:
+            time_range = f"{shift['start_time']}-{shift['end_time']}"
+            text += f"{time_range:<12} @{shift['username']:<15}\n"
+        text += "```"
+
+        logger.info(f"Schedule sorted by time: {len(shifts_sorted)} shifts")
 
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
     markup.add("Добавить смену", "Редактировать")
