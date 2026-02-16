@@ -57,7 +57,7 @@ def add_shift_start(message):
     bot.send_message(message.chat.id,
                      "**Добавление смены**\n\n"
                      "**Шаг 1/2:** Введите время смены:\n"
-                     "`17:00-19:00`",
+                     "Например: `17:00-19:00`",
                      parse_mode='Markdown', reply_markup=markup)
 
 
@@ -165,7 +165,7 @@ def inline_callback_handler(call):
     # Редактирование смены
     if data.startswith("edit_"):
         shift_id = int(data.split("_")[1])
-        logger.info(f"✏️ Edit shift request: ID {shift_id}")
+        logger.info(f"Edit shift request: ID {shift_id}")
 
         shifts = load_shifts()
         shift = next((s for s in shifts if s["id"] == shift_id), None)
@@ -184,7 +184,7 @@ def inline_callback_handler(call):
                 f"**Редактирование смены ID `{shift_id}`**\n\n"
                 f"Текущее: `{shift['start_time']}-{shift['end_time']} @{shift['username']}`\n\n"
                 f"**Шаг 1/2:** Введите новое время:\n"
-                f"`17:00-19:00`",
+                f"Например: `17:00-19:00`",
                 call.message.chat.id, call.message.message_id,
                 parse_mode='Markdown', reply_markup=markup
             )
@@ -267,7 +267,7 @@ def handle_admin_input(message):
             bot.send_message(message.chat.id,
                              f"**Новое время:** `{start_time}-{end_time}`\n\n"
                              "**Шаг 2/2:** Новый тег менеджера:\n"
-                             "`@username`",
+                             "Например: `@username`",
                              parse_mode='Markdown', reply_markup=markup)
             return
         else:
@@ -343,7 +343,7 @@ def handle_admin_input(message):
             bot.send_message(message.chat.id,
                              f"**Время:** `{start_time}-{end_time}`\n\n"
                              "**Шаг 2/2:** Тег менеджера:\n"
-                             "`@username`",
+                             "Например: `@username`",
                              parse_mode='Markdown', reply_markup=markup)
             return
         else:
