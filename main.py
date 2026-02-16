@@ -1,22 +1,17 @@
-import os
 import re
 import threading
 import time
-from telebot import types
 import telebot
-from dotenv import load_dotenv
+from telebot import types
 from logger import setup_logger
 from datetime import datetime
+from settings import settings
 from tools import get_shift_start_time, load_shifts, save_shifts
 
-load_dotenv()
 logger = setup_logger()
-ADMIN_IDS = [1473443039]
-GROUP_CHAT_ID = os.getenv("GROUP_CHAT_ID")
-BOT_TOKEN = os.getenv("BOT_TOKEN")
 user_states = {}
 
-bot = telebot.TeleBot(BOT_TOKEN)
+bot = telebot.TeleBot(settings.BOT_TOKEN)
 
 # Пинг смены в группу
 def ping_shift_start():
@@ -29,14 +24,14 @@ def ping_shift_start():
 @{username} твоя очередь!
         """
         try:
-            bot.send_message(GROUP_CHAT_ID, message, parse_mode='Markdown', disable_web_page_preview=True)
+            bot.send_message(settings.GROUP_CHAT_ID, message, parse_mode='Markdown', disable_web_page_preview=True)
             logger.info(f"Ping shift start: @{username} in {datetime.now().strftime('%H:%M')}")
         except Exception as e:
             logger.info(f"Ping error: {e}")
 
 
 # Главное меню для админа
-@bot.message_handler(commands=['start'], func=lambda m: m.from_user.id in ADMIN_IDS)
+@bot.message_handler(commands=['start'], func=lambda m: m.from_user.id in settings.ADMIN_IDS)
 def admin_start(message):
     logger.info(f"Admin {message.from_user.id} opened main menu")
     markup = telebot.types.ReplyKeyboardMarkup(resize_keyboard=True)
@@ -52,7 +47,7 @@ def admin_start(message):
 
 
 # Добавить смену
-@bot.message_handler(func=lambda m: m.from_user.id in ADMIN_IDS and m.text == "Добавить смену")
+@bot.message_handler(func=lambda m: m.from_user.id in settings.ADMIN_IDS and m.text == "Добавить смену")
 def add_shift_start(message):
     logger.info(f"Admin {message.from_user.id} started adding shift")
     user_states[message.from_user.id] = {"stage": "waiting_time"}
@@ -67,7 +62,7 @@ def add_shift_start(message):
 
 
 # График
-@bot.message_handler(func=lambda m: m.from_user.id in ADMIN_IDS and m.text == "График")
+@bot.message_handler(func=lambda m: m.from_user.id in settings.ADMIN_IDS and m.text == "График")
 def show_schedule(message):
     logger.info(f"Admin {message.from_user.id} requested schedule")
     shifts = load_shifts()
@@ -88,7 +83,7 @@ def show_schedule(message):
 
 
 # Редактировать график
-@bot.message_handler(func=lambda m: m.from_user.id in ADMIN_IDS and m.text == "Редактировать")
+@bot.message_handler(func=lambda m: m.from_user.id in settings.ADMIN_IDS and m.text == "Редактировать")
 def edit_shift_menu(message):
     logger.info(f"Admin {message.from_user.id} opened edit menu")
     shifts = load_shifts()
@@ -121,7 +116,7 @@ def edit_shift_menu(message):
 
 
 # Удалить смену
-@bot.message_handler(func=lambda m: m.from_user.id in ADMIN_IDS and m.text == "Удалить")
+@bot.message_handler(func=lambda m: m.from_user.id in settings.ADMIN_IDS and m.text == "Удалить")
 def delete_shift_menu(message):
     logger.info(f"Admin {message.from_user.id} opened delete menu")
     shifts = load_shifts()
@@ -152,7 +147,7 @@ def delete_shift_menu(message):
 
 
 # Обработчик INLINE кнопок
-@bot.callback_query_handler(func=lambda call: call.from_user.id in ADMIN_IDS)
+@bot.callback_query_handler(func=lambda call: call.from_user.id in settings.ADMIN_IDS)
 def inline_callback_handler(call):
     data = call.data
     logger.info(f"Inline callback: {data} from user {call.from_user.id}")
@@ -227,7 +222,7 @@ def inline_callback_handler(call):
     bot.answer_callback_query(call.id)
 
 
-@bot.message_handler(func=lambda m: m.from_user.id in ADMIN_IDS)
+@bot.message_handler(func=lambda m: m.from_user.id in settings.ADMIN_IDS)
 def handle_admin_input(message):
     user_id = message.from_user.id
     text = message.text.strip()
