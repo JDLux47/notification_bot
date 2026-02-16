@@ -6,7 +6,7 @@ from telebot import types
 from logger import setup_logger
 from datetime import datetime
 from settings import settings
-from tools import get_shift_start_time, load_shifts, save_shifts
+from tools import load_shifts, save_shifts
 
 logger = setup_logger()
 user_states = {}
@@ -15,19 +15,54 @@ bot = telebot.TeleBot(settings.BOT_TOKEN)
 
 # Пинг смены в группу
 def ping_shift_start():
-    username = get_shift_start_time()
+    logger.info("Scheduler: checking shifts...")
+    now = datetime.now().strftime("%H:%M")  # "16:00"
+    shifts = load_shifts()
 
-    if username:
-        message = f"""
-**Смена ответственного!**
-{datetime.now().strftime('%d.%m %H:%M')}
-@{username} твоя очередь!
-        """
-        try:
-            bot.send_message(settings.GROUP_CHAT_ID, message, parse_mode='Markdown', disable_web_page_preview=True)
-            logger.info(f"Ping shift start: @{username} in {datetime.now().strftime('%H:%M')}")
-        except Exception as e:
-            logger.info(f"Ping error: {e}")
+    # Ищем смену, которая начинается сейчас
+    current_shift = None
+    for shift in shifts:
+        if shift["start_time"] == now:
+            current_shift = shift
+            break
+
+    if not current_shift:
+        logger.debug(f"No shift starts at {now}")
+        return
+
+    # Текущий менеджер
+    current_username = current_shift["username"]
+    interval = f"{current_shift['start_time']}-{current_shift['end_time']}"
+
+    # Находим предыдущего менеджера
+    shifts_sorted = sorted(shifts, key=lambda x: x['start_time'])
+    current_index = next((i for i, s in enumerate(shifts_sorted) if s['start_time'] == now), -1)
+
+    prev_username = None
+    if current_index > 0:
+        prev_username = shifts_sorted[current_index - 1]["username"]
+    elif len(shifts_sorted) > 1:
+        prev_username = shifts_sorted[-1]["username"]  # Последняя смена предыдущего дня
+
+    # Формируем сообщение
+    message = f"""**Смена ответственного!**
+@{current_username} твоя очередь дежурить в интервале {interval}"""
+
+    # Добавляем напоминание предыдущему менеджеру
+    if prev_username and prev_username != current_username:
+        message += f"\n@{prev_username} необходимо актуализировать информацию по незакрытым прелидам!"
+
+    try:
+        bot.send_message(
+            settings.GROUP_CHAT_ID,
+            message,
+            parse_mode='Markdown',
+            disable_web_page_preview=True,
+            message_thread_id=settings.THREAD_ID  # если используете ветку
+        )
+        logger.info(f"Ping: @{current_username} ({interval}) [prev: {prev_username or 'none'}]")
+    except Exception as e:
+        logger.error(f"Ping error: {e}")
 
 
 # Главное меню для админа
