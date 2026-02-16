@@ -73,7 +73,7 @@ def show_schedule(message):
     else:
         shifts_sorted = sorted(shifts, key=lambda x: x['start_time'])
 
-        text = "**📋 График дежурств (по порядку):**```\n"
+        text = "**График дежурств:**```\n"
         text += f"{'Время':<12} {'Менеджер':<15}\n"
         text += f"{'-' * 12} {'-' * 15}\n"
 
