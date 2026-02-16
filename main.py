@@ -46,7 +46,7 @@ def ping_shift_start():
 
     # Формируем сообщение
     message = f"""**Смена ответственного!**
-@{current_username} твоя очередь дежурить в интервале {interval}"""
+@{current_username} твоя очередь следить за прелидами в интервале {interval}"""
 
     # Добавляем напоминание предыдущему менеджеру
     if prev_username and prev_username != current_username:
