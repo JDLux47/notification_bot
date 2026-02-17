@@ -328,7 +328,7 @@ def handle_admin_input(message):
     # РЕДАКТИРОВАНИЕ: Ждём username для смены
     elif user_id in user_states and user_states[user_id]["stage"] == "waiting_username_edit":
         logger.info(f"Edit username input: {text}")
-        username_match = re.match(r'@(\w+)', text)
+        username_match = re.match(r'@([a-zA-Z0-9_]+)', text)
 
         if username_match:
             username = username_match.group(1)
@@ -404,7 +404,7 @@ def handle_admin_input(message):
     # Этап 2: Ждём username (@username)
     elif user_id in user_states and user_states[user_id]["stage"] == "waiting_username":
         logger.info(f"Add username input: {text}")
-        username_match = re.match(r'@(\w+)', text)
+        username_match = re.match(r'@([a-zA-Z0-9_]+)', text)
 
         if username_match:
             username = username_match.group(1)
