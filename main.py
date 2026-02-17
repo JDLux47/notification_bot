@@ -45,12 +45,12 @@ def ping_shift_start():
         prev_username = shifts_sorted[-1]["username"]  # Последняя смена предыдущего дня
 
     # Формируем сообщение
-    message = f"""**Смена ответственного!**
+    message = f"""**Смена ответственного\\!**
 @{escape_markdown_v2(current_username)} твоя очередь следить за прелидами в интервале {escape_markdown_v2(interval)}"""
 
     # Добавляем напоминание предыдущему менеджеру
     if prev_username and prev_username != current_username:
-        message += f"\n@{escape_markdown_v2(prev_username)} необходимо актуализировать информацию по незакрытым прелидам!"
+        message += f"\n@{escape_markdown_v2(prev_username)} необходимо актуализировать информацию по незакрытым прелидам\\!"
 
     try:
         bot.send_message(
@@ -76,7 +76,7 @@ def admin_start(message):
     markup.add("Удалить")
 
     bot.send_message(message.chat.id,
-                     "**Добро пожаловать в напоминателя!**\n"
+                     "**Добро пожаловать в напоминателя\\!**\n"
                      "Вам открыт доступ к админ-панели",
                      parse_mode='MarkdownV2', reply_markup=markup)
 
