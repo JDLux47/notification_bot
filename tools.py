@@ -15,3 +15,11 @@ def load_shifts():
 def save_shifts(shifts):
     with open(settings.DATA_FILE, 'w', encoding='utf-8') as f:
         json.dump(shifts, f, ensure_ascii=False, indent=2)
+
+
+# Экранирует спецсимволы для Markdown
+def escape_markdown_v2(text: str) -> str:
+    chars_to_escape = r'_ * [ ] ( ) ~ ` > # + - = | { } . !'.split()
+    for char in chars_to_escape:
+        text = text.replace(char, rf'\{char}')
+    return text
