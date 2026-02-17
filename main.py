@@ -77,7 +77,7 @@ def admin_start(message):
 
     bot.send_message(message.chat.id,
                      "**Добро пожаловать в напоминателя\\!**\n"
-                     "Вам открыт доступ к админ-панели",
+                     "Вам открыт доступ к админ\\-панели",
                      parse_mode='MarkdownV2', reply_markup=markup)
 
 
@@ -143,8 +143,10 @@ def edit_shift_menu(message):
                          parse_mode='MarkdownV2', reply_markup=markup)
         return
 
+    shifts_sorted = sorted(shifts, key=lambda x: x['start_time'])
+
     markup = types.InlineKeyboardMarkup(row_width=1)
-    for shift in shifts:
+    for shift in shifts_sorted:
         shift_text = f"{shift['start_time']}-{shift['end_time']} @{shift['username']}"
         markup.add(
             types.InlineKeyboardButton(
@@ -174,8 +176,10 @@ def delete_shift_menu(message):
                          parse_mode='MarkdownV2', reply_markup=markup)
         return
 
+    shifts_sorted = sorted(shifts, key=lambda x: x['start_time'])
+
     markup = types.InlineKeyboardMarkup(row_width=1)
-    for shift in shifts:
+    for shift in shifts_sorted:
         shift_text = f"{shift['start_time']}-{shift['end_time']} @{shift['username']}"
         markup.add(
             types.InlineKeyboardButton(
@@ -251,16 +255,16 @@ def inline_callback_handler(call):
             logger.info(f"Shift ID {shift_id} deleted: {shift['start_time']}-{shift['end_time']} @{shift['username']}")
 
             bot.edit_message_text(
-                f"**Смена удалена!**\n\n"
+                f"**Смена удалена\\!**\n\n"
                 f"`{shift['start_time']}-{shift['end_time']}`: **@{shift['username']}**\n\n"
                 f"ID: `{shift_id}`",
                 call.message.chat.id, call.message.message_id,
                 parse_mode='MarkdownV2'
             )
-            bot.answer_callback_query(call.id, "Смена удалена!")
+            bot.answer_callback_query(call.id, "Смена удалена\\!")
         else:
             logger.info(f"Shift ID {shift_id} not found for deletion")
-            bot.answer_callback_query(call.id, "Смена не найдена!")
+            bot.answer_callback_query(call.id, "Смена не найдена\\!")
         return
 
     bot.answer_callback_query(call.id)
@@ -317,7 +321,7 @@ def handle_admin_input(message):
         else:
             logger.info(f"Invalid time format: {text}")
             bot.send_message(message.chat.id,
-                             "**Неверный формат времени!**\n"
+                             "**Неверный формат времени\\!**\n"
                              "Пример: `17:00-19:00`", parse_mode='MarkdownV2')
             return
 
@@ -354,14 +358,14 @@ def handle_admin_input(message):
             markup.add("Удалить")
 
             bot.send_message(message.chat.id,
-                             f"**Смена {shift_id} обновлена!**\n\n"
+                             f"**Смена {shift_id} обновлена\\!**\n\n"
                              f"`{shift_data['start_time']}-{shift_data['end_time']}`: **@{username}**",
                              parse_mode='MarkdownV2', reply_markup=markup)
             return
         else:
             logger.warning(f"Invalid username format: {text}")
             bot.send_message(message.chat.id,
-                             "**Неверный формат!**\n"
+                             "**Неверный формат\\!**\n"
                              "Пример: `@username`", parse_mode='MarkdownV2')
             return
 
@@ -393,7 +397,7 @@ def handle_admin_input(message):
         else:
             logger.warning(f"Invalid add time format: {text}")
             bot.send_message(message.chat.id,
-                             "**Неверный формат времени!**\n"
+                             "**Неверный формат времени\\!**\n"
                              "Пример: `17:00-19:00`", parse_mode='MarkdownV2')
             return
 
@@ -431,21 +435,14 @@ def handle_admin_input(message):
             markup.add("Удалить")
 
             bot.send_message(message.chat.id,
-                             f"**Смена добавлена!**\n\n"
+                             f"**Смена добавлена\\!**\n\n"
                              f"`{shift_data['start_time']}-{shift_data['end_time']}`: **@{username}**",
                              parse_mode='MarkdownV2', reply_markup=markup)
-
-            # Показываем обновлённый график
-            shifts = load_shifts()
-            text = "**Актуальный график:**\n\n"
-            for shift in shifts:
-                text += f"`{shift['start_time']}-{shift['end_time']}`: **@{shift['username']}**\n"
-            bot.send_message(message.chat.id, text, parse_mode='MarkdownV2')
             return
         else:
             logger.warning(f"Invalid add username format: {text}")
             bot.send_message(message.chat.id,
-                             "**Неверный формат!**\n"
+                             "**Неверный формат\\!**\n"
                              "Пример: `@username`", parse_mode='MarkdownV2')
             return
 
