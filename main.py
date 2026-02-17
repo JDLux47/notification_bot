@@ -359,7 +359,7 @@ def handle_admin_input(message):
 
             bot.send_message(message.chat.id,
                              f"**Смена {shift_id} обновлена\\!**\n\n"
-                             f"`{shift_data['start_time']}-{shift_data['end_time']}`: **@{username}**",
+                             f"`{shift_data['start_time']}-{shift_data['end_time']}`: **@{escape_markdown_v2(username)}**",
                              parse_mode='MarkdownV2', reply_markup=markup)
             return
         else:
@@ -423,7 +423,7 @@ def handle_admin_input(message):
             }
             shifts.append(new_shift)
             save_shifts(shifts)
-            logger.info(f"New shift added: ID {new_id}, {shift_data['start_time']}-{shift_data['end_time']} @{username}")
+            logger.info(f"New shift added: ID {new_id}, {shift_data['start_time']}-{shift_data['end_time']} @{escape_markdown_v2(username)}")
 
             # Очищаем состояние
             del user_states[user_id]
@@ -436,7 +436,7 @@ def handle_admin_input(message):
 
             bot.send_message(message.chat.id,
                              f"**Смена добавлена\\!**\n\n"
-                             f"`{shift_data['start_time']}-{shift_data['end_time']}`: **@{username}**",
+                             f"`{shift_data['start_time']}-{shift_data['end_time']}`: **@{escape_markdown_v2(username)}**",
                              parse_mode='MarkdownV2', reply_markup=markup)
             return
         else:
