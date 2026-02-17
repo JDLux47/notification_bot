@@ -114,7 +114,7 @@ def show_schedule(message):
 
         for shift in shifts_sorted:
             time_range = f"{shift['start_time']}-{shift['end_time']}"
-            text += f"{time_range:<12} @{shift['username']:<15}\n"
+            text += f"{time_range:<12} @{escape_markdown_v2(shift['username']):<15}\n"
         text += "```"
 
         logger.info(f"Schedule sorted by time: {len(shifts_sorted)} shifts")
@@ -147,7 +147,7 @@ def edit_shift_menu(message):
 
     markup = types.InlineKeyboardMarkup(row_width=1)
     for shift in shifts_sorted:
-        shift_text = f"{shift['start_time']}-{shift['end_time']} @{shift['username']}"
+        shift_text = f"{shift['start_time']}-{shift['end_time']} @{escape_markdown_v2(shift['username'])}"
         markup.add(
             types.InlineKeyboardButton(
                 f"{shift_text}",
@@ -180,7 +180,7 @@ def delete_shift_menu(message):
 
     markup = types.InlineKeyboardMarkup(row_width=1)
     for shift in shifts_sorted:
-        shift_text = f"{shift['start_time']}-{shift['end_time']} @{shift['username']}"
+        shift_text = f"{shift['start_time']}-{shift['end_time']} @{escape_markdown_v2(shift['username'])}"
         markup.add(
             types.InlineKeyboardButton(
                 f"{shift_text}",
@@ -230,7 +230,7 @@ def inline_callback_handler(call):
 
             bot.edit_message_text(
                 f"**Редактирование смены ID `{shift_id}`**\n\n"
-                f"Текущее: `{shift['start_time']}-{shift['end_time']} @{shift['username']}`\n\n"
+                f"Текущее: `{shift['start_time']}-{shift['end_time']} @{escape_markdown_v2(shift['username'])}`\n\n"
                 f"**Шаг 1/2:** Введите новое время:\n"
                 f"Например: `17:00-19:00`",
                 call.message.chat.id, call.message.message_id,
@@ -252,11 +252,11 @@ def inline_callback_handler(call):
         if shift:
             shifts = [s for s in shifts if s["id"] != shift_id]
             save_shifts(shifts)
-            logger.info(f"Shift ID {shift_id} deleted: {shift['start_time']}-{shift['end_time']} @{shift['username']}")
+            logger.info(f"Shift ID {shift_id} deleted: {shift['start_time']}-{shift['end_time']} @{escape_markdown_v2(shift['username'])}")
 
             bot.edit_message_text(
                 f"**Смена удалена\\!**\n\n"
-                f"`{shift['start_time']}-{shift['end_time']}`: **@{shift['username']}**\n\n"
+                f"`{shift['start_time']}-{shift['end_time']}`: **@{escape_markdown_v2(shift['username'])}**\n\n"
                 f"ID: `{shift_id}`",
                 call.message.chat.id, call.message.message_id,
                 parse_mode='MarkdownV2'
