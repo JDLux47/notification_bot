@@ -16,7 +16,12 @@ bot = telebot.TeleBot(settings.BOT_TOKEN)
 # Пинг смены в группу
 def ping_shift_start():
     logger.info("Scheduler: checking shifts...")
-    now = datetime.now().strftime("%H:%M")  # "16:00"
+
+    if datetime.now().weekday() >= 5:
+        logger.info("Weekend. Ping off")
+        return
+
+    now = datetime.now().strftime("%H:%M")
     shifts = load_shifts()
 
     # Ищем смену, которая начинается сейчас
